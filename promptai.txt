@@ -1,0 +1,163 @@
+5 Buat Algoritma Penyelesaian Sistem Persamaan Linear 3 variabel dan simpan pada Repository "Komputasi Numerik" di Github
+
+6 Buat kode Python pada Google Colab berdasarkan nomor 5, dan simpan pada Repository "Komputasi Numerik" di Github. Pastikan kode tertata dalam cell-cell sehingga bisa di Running pada tiap cell.
+
+7 Edit kode Python tersebut di Github dengan menambahkan keterangan detail penjelasan tiap baris kode atau cell.
+
+Berikut adalah solusi lengkap untuk ketiga tugas praktikum/kuliah tersebut menggunakan metode Eliminasi Gauss (dengan Partial Pivoting)—metode standar dan paling stabil secara numerik untuk menyelesaikan Sistem Persamaan Linear 3 Variabel (SPLTV).
+
+Tugas 5: Algoritma Penyelesaian SPL 3 Variabel (Metode Eliminasi Gauss)
+Anda dapat menyimpan algoritma ini sebagai file README.md atau algoritma_spltv.md di dalam repository Komputasi Numerik di GitHub.
+
+Markdown
+# Algoritma Penyelesaian Sistem Persamaan Linear 3 Variabel (SPLTV)
+**Metode:** Eliminasi Gauss dengan Partial Pivoting
+
+## 1. Deskripsi Masalah
+Diberikan sistem persamaan linear 3 variabel dalam bentuk umum:
+- Persamaan 1: $a_{11}x + a_{12}y + a_{13}z = b_1$
+- Persamaan 2: $a_{21}x + a_{22}y + a_{23}z = b_2$
+- Persamaan 3: $a_{31}x + a_{32}y + a_{33}z = b_3$
+
+## 2. Langkah-Langkah Algoritma (Pseudocode)
+1. **Mulai**
+2. **Inisialisasi Matriks Augmented ($M$):**
+   Masukkan koefisien variabel dan konstanta ke dalam matriks berukuran $3 \times 4$:
+   $$M = \begin{bmatrix} a_{11} & a_{12} & a_{13} & | & b_1 \\ a_{21} & a_{22} & a_{23} & | & b_2 \\ a_{31} & a_{32} & a_{33} & | & b_3 \end{bmatrix}$$
+3. **Fase Eliminasi Maju (Forward Elimination):**
+   Untuk setiap kolom pivot $i$ dari $0$ hingga $1$:
+   a. **Partial Pivoting:** Cari baris $p$ (dengan $p \ge i$) yang memiliki nilai absolut elemen terbesar pada kolom $i$ ($|M[p][i]|$). Jika $p \neq i$, tukar baris ke-$i$ dengan baris ke-$p$.
+   b. **Cek Singularitas:** Jika $M[i][i] = 0$, hentikan proses (sistem tidak memiliki solusi unik).
+   c. **Nol-kan Elemen di Bawah Pivot:** Untuk setiap baris $j$ dari $i + 1$ hingga $2$:
+      - Hitung faktor pengali: $\text{faktor} = \frac{M[j][i]}{M[i][i]}$
+      - Perbarui seluruh elemen pada baris $j$: $M[j] = M[j] - (\text{faktor} \times M[i])$
+4. **Cek Konsistensi Baris Terakhir:**
+   Jika $M[2][2] = 0$:
+   - Jika $M[2][3] = 0$, sistem memiliki **tak hingga banyak solusi**.
+   - Jika $M[2][3] \neq 0$, sistem **tidak memiliki solusi (inkonsisten)**.
+   - Hentikan program.
+5. **Fase Substitusi Mundur (Back Substitution):**
+   - Hitung nilai $z$: $z = \frac{M[2][3]}{M[2][2]}$
+   - Hitung nilai $y$: $y = \frac{M[1][3] - M[1][2] \cdot z}{M[1][1]}$
+   - Hitung nilai $x$: $x = \frac{M[0][3] - M[0][1] \cdot y - M[0][2] \cdot z}{M[0][0]}$
+6. **Output:** Tampilkan nilai $x, y,$ dan $z$.
+7. **Selesai**
+Tugas 6 & 7: Kode Python Terstruktur per Cell (Sudah Dilengkapi Penjelasan Detail)
+Karena tugas nomor 6 meminta kode dibagi per cell di Google Colab lalu disimpan ke GitHub, dan nomor 7 meminta penambahan keterangan detail tiap baris/cell langsung di GitHub, kode di bawah ini sudah mencakup versi final (Tugas 6 + Tugas 7).
+
+Tips Pengerjaan GitHub (Agar Riwayat Commit Terlihat):
+
+Di Google Colab, buat notebook baru bernama SPLTV_Eliminasi_Gauss.ipynb, masukkan kode per cell (tanpa komentar detail dulu jika ingin mengikuti urutan ketat), lalu klik File > Save a copy in GitHub ke repository Komputasi Numerik.
+
+Buka file .ipynb tersebut di GitHub, klik ikon pensil (Edit this file), lalu perbarui dengan kode lengkap berpenjelasan di bawah ini dan lakukan Commit changes.
+
+Cell 1: Import Library dan Input Matriks Augmented
+Python
+# Mengimpor library NumPy untuk memudahkan operasi matriks dan perhitungan numerik
+import numpy as np
+
+# Mendefinisikan matriks augmented (ukuran 3x4) dari contoh SPLTV:
+# Persamaan 1: 2x +  y -  z =  8
+# Persamaan 2: -3x - y + 2z = -11
+# Persamaan 3: -2x + y + 2z = -3
+# Tipe data float64 digunakan agar hasil pembagian desimal tetap presisi
+A_aug = np.array([
+    [ 2.0,  1.0, -1.0,   8.0],
+    [-3.0, -1.0,  2.0, -11.0],
+    [-2.0,  1.0,  2.0,  -3.0]
+], dtype=np.float64)
+
+# Menampilkan matriks awal ke layar sebelum dilakukan proses eliminasi
+print("Matriks Augmented Awal:")
+print(A_aug)
+Cell 2: Fungsi Eliminasi Maju (Forward Elimination + Partial Pivoting)
+Python
+# Mendefinisikan fungsi eliminasi maju untuk mengubah matriks menjadi bentuk segitiga atas
+def eliminasi_maju(matriks):
+    # Membuat salinan matriks agar data asli di Cell 1 tidak ikut berubah
+    M = matriks.copy()
+    # Mengambil jumlah baris matriks (dalam kasus SPLTV, n = 3)
+    n = len(M)
+
+    # Melakukan iterasi untuk setiap kolom pivot (kolom 0 dan kolom 1)
+    for i in range(n - 1):
+        # --- TAHAP PARTIAL PIVOTING ---
+        # Mencari indeks baris dengan nilai absolut terbesar pada kolom ke-i mulai dari baris i ke bawah
+        baris_max = i + np.argmax(np.abs(M[i:, i]))
+        
+        # Jika baris dengan nilai terbesar bukan baris pivot saat ini, tukar posisi kedua baris tersebut
+        if baris_max != i:
+            M[[i, baris_max]] = M[[baris_max, i]]
+            
+        # Memeriksa apakah elemen pivot bernilai nol (menandakan matriks singular / tidak punya solusi unik)
+        if np.isclose(M[i, i], 0.0):
+            raise ValueError("Pivot bernilai nol: Sistem persamaan tidak memiliki solusi unik.")
+
+        # --- TAHAP ELIMINASI BARIS ---
+        # Melakukan perulangan untuk setiap baris j yang berada di bawah baris pivot i
+        for j in range(i + 1, n):
+            # Menghitung faktor pengali agar elemen di bawah pivot menjadi nol
+            faktor = M[j, i] / M[i, i]
+            # Mengurangi baris ke-j dengan hasil perkalian faktor dan baris pivot ke-i
+            M[j, i:] = M[j, i:] - faktor * M[i, i:]
+
+    # Mengembalikan matriks yang sudah berbentuk segitiga atas (Upper Triangular Matrix)
+    return M
+
+# Menjalankan fungsi eliminasi maju pada matriks awal dan menyimpan hasilnya
+matriks_segitiga = eliminasi_maju(A_aug)
+
+# Menampilkan matriks hasil eliminasi maju
+print("Matriks Setelah Eliminasi Maju (Segitiga Atas):")
+print(np.round(matriks_segitiga, 4))
+Cell 3: Fungsi Substitusi Mundur (Back Substitution)
+Python
+# Mendefinisikan fungsi substitusi mundur untuk mencari nilai variabel x, y, dan z
+def substitusi_mundur(M):
+    # Mengambil jumlah persamaan (n = 3)
+    n = len(M)
+    # Memeriksa elemen pivot terakhir; jika nol, sistem tidak memiliki solusi tunggal
+    if np.isclose(M[n - 1, n - 1], 0.0):
+        raise ValueError("Sistem persamaan inkonsisten atau memiliki tak hingga solusi.")
+
+    # Menyiapkan array kosong berukuran 3 untuk menampung hasil [x, y, z]
+    solusi = np.zeros(n, dtype=np.float64)
+
+    # Melakukan perulangan mundur dari baris terbawah (indeks 2) hingga baris teratas (indeks 0)
+    for i in range(n - 1, -1, -1):
+        # Menghitung jumlah perkalian koefisien dan nilai variabel yang sudah diketahui di sebelah kanan
+        jumlah_kanan = np.dot(M[i, i+1:n], solusi[i+1:n])
+        # Menghitung nilai variabel ke-i dengan membagi sisa konstanta terhadap elemen diagonal utama
+        solusi[i] = (M[i, n] - jumlah_kanan) / M[i, i]
+
+    # Mengembalikan array berisi nilai [x, y, z]
+    return solusi
+
+# Menjalankan fungsi substitusi mundur menggunakan matriks segitiga atas dari Cell 2
+hasil_akhir = substitusi_mundur(matriks_segitiga)
+
+# Menampilkan nilai masing-masing variabel secara rapi
+print("Hasil Penyelesaian SPLTV:")
+print(f"x = {hasil_akhir[0]:.4f}")
+print(f"y = {hasil_akhir[1]:.4f}")
+print(f"z = {hasil_akhir[2]:.4f}")
+Cell 4: Verifikasi Hasil dengan Fungsi Bawaan NumPy
+Python
+# Memisahkan matriks koefisien (3 kolom pertama) dan vektor konstanta (kolom terakhir)
+A = A_aug[:, :3]
+B = A_aug[:, 3]
+
+# Menghitung solusi pembanding menggunakan solver linear algebra bawaan NumPy
+verifikasi = np.linalg.solve(A, B)
+
+# Menampilkan hasil verifikasi untuk memastikan algoritma manual sudah 100% akurat
+print("Verifikasi dengan np.linalg.solve:")
+print(f"x = {verifikasi[0]:.4f}, y = {verifikasi[1]:.4f}, z = {verifikasi[2]:.4f}")
+Cara Menyimpan dari Google Colab ke GitHub
+Buat repository baru di akun GitHub Anda dengan nama Komputasi-Numerik (atau Komputasi Numerik, GitHub akan otomatis mengubah spasi menjadi tanda hubung -).
+
+Di Google Colab, salin kode di atas ke dalam 4 cell terpisah dan jalankan semuanya (Runtime > Run all) agar output tiap cell tersimpan.
+
+Klik menu File > Save a copy in GitHub.
+
+Pilih repository Komputasi-Numerik, beri nama file (misalnya Tugas_SPLTV.ipynb), isi pesan commit, lalu klik OK.
