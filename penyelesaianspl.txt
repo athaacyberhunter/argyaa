@@ -1,1 +1,33 @@
 
+# Algoritma Penyelesaian Sistem Persamaan Linear 3 Variabel (SPLTV)
+**Metode:** Eliminasi Gauss dengan Partial Pivoting
+
+## 1. Deskripsi Masalah
+Diberikan sistem persamaan linear 3 variabel dalam bentuk umum:
+- Persamaan 1: $a_{11}x + a_{12}y + a_{13}z = b_1$
+- Persamaan 2: $a_{21}x + a_{22}y + a_{23}z = b_2$
+- Persamaan 3: $a_{31}x + a_{32}y + a_{33}z = b_3$
+
+## 2. Langkah-Langkah Algoritma (Pseudocode)
+1. **Mulai**
+2. **Inisialisasi Matriks Augmented ($M$):**
+   Masukkan koefisien variabel dan konstanta ke dalam matriks berukuran $3 \times 4$:
+   $$M = \begin{bmatrix} a_{11} & a_{12} & a_{13} & | & b_1 \\ a_{21} & a_{22} & a_{23} & | & b_2 \\ a_{31} & a_{32} & a_{33} & | & b_3 \end{bmatrix}$$
+3. **Fase Eliminasi Maju (Forward Elimination):**
+   Untuk setiap kolom pivot $i$ dari $0$ hingga $1$:
+   a. **Partial Pivoting:** Cari baris $p$ (dengan $p \ge i$) yang memiliki nilai absolut elemen terbesar pada kolom $i$ ($|M[p][i]|$). Jika $p \neq i$, tukar baris ke-$i$ dengan baris ke-$p$.
+   b. **Cek Singularitas:** Jika $M[i][i] = 0$, hentikan proses (sistem tidak memiliki solusi unik).
+   c. **Nol-kan Elemen di Bawah Pivot:** Untuk setiap baris $j$ dari $i + 1$ hingga $2$:
+      - Hitung faktor pengali: $\text{faktor} = \frac{M[j][i]}{M[i][i]}$
+      - Perbarui seluruh elemen pada baris $j$: $M[j] = M[j] - (\text{faktor} \times M[i])$
+4. **Cek Konsistensi Baris Terakhir:**
+   Jika $M[2][2] = 0$:
+   - Jika $M[2][3] = 0$, sistem memiliki **tak hingga banyak solusi**.
+   - Jika $M[2][3] \neq 0$, sistem **tidak memiliki solusi (inkonsisten)**.
+   - Hentikan program.
+5. **Fase Substitusi Mundur (Back Substitution):**
+   - Hitung nilai $z$: $z = \frac{M[2][3]}{M[2][2]}$
+   - Hitung nilai $y$: $y = \frac{M[1][3] - M[1][2] \cdot z}{M[1][1]}$
+   - Hitung nilai $x$: $x = \frac{M[0][3] - M[0][1] \cdot y - M[0][2] \cdot z}{M[0][0]}$
+6. **Output:** Tampilkan nilai $x, y,$ dan $z$.
+7. **Selesai**
